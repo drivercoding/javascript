@@ -6,6 +6,25 @@
   <title>Belajar Javascript</title>
 </head>
 <body>
+
+  <h1>Ini contoh array dalam Daftar Nama Kota</h1>
+<ul id="daftarKota"></ul>
+
+<script>
+  let kota = ["Bogor", "Depok", "Jakarta"];
+  let daftar = document.getElementById("daftarKota");
+
+  for (let i = 0; i < kota.length; i++) {
+    let item = document.createElement("li"); // Buat elemen <li>
+      item.textContent = (i + 1) + ". " + kota[i];  // Menambahkan angka urut
+ 
+    daftar.appendChild(item);                // Tambahkan ke <ul>
+  }
+</script>
+
+
+  <!-- Ini contoh array versi dasar 
+
   <h1>Ini contoh array untuk nama kota</h1>
   <script>
     let kota = ["Bogor", "Depok", "Bandung"];
@@ -23,5 +42,7 @@
       console.log(namaKota);
     }
     </script>
+
+    -->
 </body>
 </html>
