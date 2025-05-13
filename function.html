@@ -19,7 +19,7 @@
   tampilkanKota("Bogor");     
   </script>
   -->
-
+<!-- ini next level function
   <h1>Daftar Kota</h1>
 <ul id="daftarKota"></ul>
 
@@ -38,7 +38,34 @@
   let daftarNamaKota = ["Jakarta", "Bogor", "Depok"];
   tampilkanKota(daftarNamaKota);  // Panggil function dan kirim array
 </script>
+  -->
+  <h1>Daftar Kota</h1>
+<ul id="daftarKota"></ul>
 
- 
+<script>
+  let daftarNamaKota = ["Jakarta", "Bogor", "Depok"];
+
+  function tampilkanKota(kotaArray) {
+    let daftar = document.getElementById("daftarKota");
+    daftar.innerHTML = ""; // Kosongkan list dulu
+    for (let i = 0; i < kotaArray.length; i++) {
+      let item = document.createElement("li");
+      item.textContent = kotaArray[i];
+      daftar.appendChild(item);
+    }
+  }
+
+  function tambahKota(namaBaru) {
+    daftarNamaKota.push(namaBaru);     // Tambah ke array
+    tampilkanKota(daftarNamaKota);     // Tampilkan ulang
+  }
+
+  tampilkanKota(daftarNamaKota);       // Tampilkan awal
+
+  // Tambah kota baru:
+  tambahKota("Bandung");
+  tambahKota("Surabaya");
+</script>
+
 </body>
 </html>
