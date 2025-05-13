@@ -39,6 +39,8 @@
   tampilkanKota(daftarNamaKota);  // Panggil function dan kirim array
 </script>
   -->
+
+  <!-- ini lanjutan next level function
   <h1>Daftar Kota</h1>
 <ul id="daftarKota"></ul>
 
@@ -66,6 +68,43 @@
   tambahKota("Bandung");
   tambahKota("Surabaya");
 </script>
+ -->
+ <h1>Daftar Kota</h1>
 
+ <input type="text" id="inputKota" placeholder="Masukkan nama kota">
+ <button onclick="tambahKota()">Tambah Kota</button>
+ 
+ <ul id="daftarKota"></ul>
+ 
+ <script>
+   let daftarNamaKota = ["Jakarta", "Bogor", "Depok"];
+ 
+   function tampilkanKota() {
+     let daftar = document.getElementById("daftarKota");
+     daftar.innerHTML = ""; // Bersihkan dulu
+     for (let i = 0; i < daftarNamaKota.length; i++) {
+       let item = document.createElement("li");
+       item.textContent = daftarNamaKota[i];
+       daftar.appendChild(item);
+     }
+   }
+ 
+   function tambahKota() {
+     let input = document.getElementById("inputKota");
+     let namaBaru = input.value.trim();
+ 
+     if (namaBaru !== "") {
+       daftarNamaKota.push(namaBaru);
+       tampilkanKota();
+       input.value = "";  // Kosongkan input setelah tambah
+     } else {
+       alert("Masukkan nama kota terlebih dahulu.");
+     }
+   }
+ 
+   // Tampilkan awal
+   tampilkanKota();
+ </script>
+ 
 </body>
 </html>
