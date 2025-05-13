@@ -9,6 +9,7 @@
   <script src='main.js'></script>
 </head>
 <body>
+  <!-- ini dasar function
   <script>
      function tampilkanKota(namakota) {
     console.log("Halo, " + namakota + "!");
@@ -17,6 +18,27 @@
   tampilkanKota("Jakarta");    
   tampilkanKota("Bogor");     
   </script>
+  -->
+
+  <h1>Daftar Kota</h1>
+<ul id="daftarKota"></ul>
+
+<script>
+  function tampilkanKota(kotaArray) {
+    let daftar = document.getElementById("daftarKota");
+    daftar.innerHTML = ""; // Kosongkan dulu sebelum isi ulang
+
+    for (let i = 0; i < kotaArray.length; i++) {
+      let item = document.createElement("li");
+      item.textContent = kotaArray[i];
+      daftar.appendChild(item);
+    }
+  }
+
+  let daftarNamaKota = ["Jakarta", "Bogor", "Depok"];
+  tampilkanKota(daftarNamaKota);  // Panggil function dan kirim array
+</script>
+
  
 </body>
 </html>
