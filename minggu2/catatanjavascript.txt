@@ -1,0 +1,18 @@
+| Konsep JavaScript  | Keterangan                             |
+| ------------------ | -------------------------------------- |
+| `getElementById()` | Mengambil elemen HTML berdasarkan `id` |
+| `value`            | Mengambil nilai dari input teks        |
+| `trim()`           | Membersihkan spasi depan dan belakang  |
+| `createElement()`  | Membuat elemen HTML baru               |
+| `innerText`        | Menyisipkan teks ke elemen HTML        |
+| `className`        | Menambahkan class CSS/Bootstrap        |
+| `appendChild()`    | Menambahkan elemen baru ke parent-nya  |
+| `alert()`          | Menampilkan pesan peringatan sederhana |
+
+| Fungsi                | Keterangan                                                |
+| --------------------- | --------------------------------------------------------- |
+| `window.onload`       | Dipanggil saat halaman selesai dimuat                     |
+| `JSON.parse()`        | Mengubah string dari localStorage menjadi array           |
+| `tampilkanKeDaftar()` | Menambahkan aktivitas ke tampilan `<ul>`                  |
+| `simpanAktivitas()`   | Menambahkan aktivitas ke array dan simpan ke localStorage |
+| `JSON.stringify()`    | Mengubah array ke string untuk disimpan di localStorage   |
