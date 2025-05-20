@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tambah Elemen + localStorage</title>
+  <title>Daftar Aktivitas + localStorage</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body class="bg-light d-flex justify-content-center align-items-center vh-100">
@@ -22,7 +22,7 @@
   </div>
 
   <script>
-    // Ambil data dari localStorage saat halaman dibuka
+    // Load data dari localStorage saat halaman dibuka
     window.onload = function() {
       const dataTersimpan = localStorage.getItem("daftarAktivitas");
       if (dataTersimpan) {
@@ -42,22 +42,41 @@
         return;
       }
 
-      tampilkanKeDaftar(aktivitas); // tampilkan di halaman
-      simpanAktivitas(aktivitas);   // simpan ke localStorage
+      tampilkanKeDaftar(aktivitas);
+      simpanAktivitas(aktivitas);
       input.value = "";
     }
 
     function tampilkanKeDaftar(aktivitas) {
-      const liBaru = document.createElement('li');
-      liBaru.innerText = aktivitas;
-      liBaru.className = 'list-group-item';
-      document.getElementById('daftarAktivitas').appendChild(liBaru);
+      const li = document.createElement('li');
+      li.innerText = aktivitas;
+      li.className = 'list-group-item d-flex justify-content-between align-items-center';
+
+      const btnHapus = document.createElement('button');
+      btnHapus.innerText = 'Hapus';
+      btnHapus.className = 'btn btn-sm btn-danger';
+      btnHapus.onclick = function() {
+        li.remove(); // hapus dari tampilan
+        hapusDariLocalStorage(aktivitas);
+      };
+
+      li.appendChild(btnHapus);
+      document.getElementById('daftarAktivitas').appendChild(li);
     }
 
     function simpanAktivitas(aktivitasBaru) {
       let aktivitasList = JSON.parse(localStorage.getItem("daftarAktivitas")) || [];
       aktivitasList.push(aktivitasBaru);
       localStorage.setItem("daftarAktivitas", JSON.stringify(aktivitasList));
+    }
+
+    function hapusDariLocalStorage(aktivitasYangDihapus) {
+      let aktivitasList = JSON.parse(localStorage.getItem("daftarAktivitas")) || [];
+      const index = aktivitasList.indexOf(aktivitasYangDihapus);
+      if (index !== -1) {
+        aktivitasList.splice(index, 1); // hapus 1 item di posisi index
+        localStorage.setItem("daftarAktivitas", JSON.stringify(aktivitasList));
+      }
     }
   </script>
 
