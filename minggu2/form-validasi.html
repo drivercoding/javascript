@@ -3,129 +3,170 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Edit Data Aktivitas</title>
+  <title>Manajemen Aktivitas + Pagination</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
-<body class="bg-light d-flex justify-content-center align-items-center vh-100">
+<body class="bg-light">
 
-  <div class="container bg-white p-4 rounded shadow" style="max-width: 600px;">
-    <!-- Notifikasi -->
-    <div id="toastPesan" class="alert d-none text-white bg-danger mb-3" role="alert">
-      <div class="d-flex justify-content-between">
-        <span id="isiPesan">Pesan di sini</span>
-        <button type="button" class="btn-close btn-close-white" onclick="sembunyikanToast()"></button>
-      </div>
-    </div>
+  <div class="container py-5">
+    <div class="bg-white p-4 rounded shadow-sm">
+      <h3 class="mb-4">Daftar Aktivitas</h3>
 
-    <h3 class="mb-3">Aktivitas Harian</h3>
-
-    <!-- Form -->
-    <form onsubmit="return prosesForm(event)">
+      <!-- Form Tambah/Edit -->
       <div class="input-group mb-3">
-        <input type="text" id="inputAktivitas" class="form-control" placeholder="Masukkan aktivitas">
-        <button id="btnSubmit" class="btn btn-primary" type="submit">Tambah</button>
+        <input type="text" id="inputAktivitas" class="form-control" placeholder="Masukkan aktivitas baru" />
+        <button id="btnSimpan" class="btn btn-primary" onclick="simpanAktivitas()">Tambah</button>
       </div>
-    </form>
 
-    <!-- Tabel -->
-    <div class="table-responsive">
-      <table class="table table-striped table-bordered align-middle text-center">
-        <thead class="table-dark">
-          <tr>
-            <th>No</th>
-            <th>Aktivitas</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="tabelAktivitas"></tbody>
-      </table>
+      <!-- Filter dan Jumlah Per Halaman -->
+      <div class="d-flex justify-content-between mb-3 flex-wrap">
+        <input type="text" id="searchInput" class="form-control me-2 mb-2" placeholder="Cari aktivitas..." style="max-width: 300px;" />
+        
+        <div class="d-flex align-items-center">
+          <label class="me-2">Tampilkan:</label>
+          <select id="rowsPerPage" class="form-select" style="width: auto;" onchange="ubahJumlahPerHalaman()">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="9999">Semua</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tabel Aktivitas -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="table-secondary">
+            <tr>
+              <th>No</th>
+              <th>Aktivitas</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabelAktivitas"></tbody>
+        </table>
+      </div>
+
+      <!-- Navigasi Pagination -->
+      <nav>
+        <ul class="pagination justify-content-center" id="pagination"></ul>
+      </nav>
     </div>
   </div>
 
   <script>
     let daftarAktivitas = JSON.parse(localStorage.getItem("daftarAktivitas")) || [];
-    let indeksEdit = -1; // -1 artinya bukan mode edit
+    let editIndex = -1;
+    let currentPage = 1;
+    let rowsPerPage = 10;
 
-    function tampilkanToast(pesan, tipe = "danger") {
-      const toast = document.getElementById("toastPesan");
-      const isi = document.getElementById("isiPesan");
-
-      toast.className = `alert text-white bg-${tipe} mb-3`;
-      isi.textContent = pesan;
-      toast.classList.remove("d-none");
-
-      setTimeout(() => toast.classList.add("d-none"), 3000);
+    function simpanKeLocalStorage() {
+      localStorage.setItem("daftarAktivitas", JSON.stringify(daftarAktivitas));
     }
 
-    function sembunyikanToast() {
-      document.getElementById("toastPesan").classList.add("d-none");
-    }
-
-    function prosesForm(event) {
-      event.preventDefault();
+    function simpanAktivitas() {
       const input = document.getElementById("inputAktivitas");
       const aktivitas = input.value.trim();
 
       if (aktivitas === "") {
-        tampilkanToast("Aktivitas tidak boleh kosong!", "danger");
-        return false;
+        alert("Aktivitas tidak boleh kosong!");
+        return;
       }
 
-      if (indeksEdit === -1) {
-        // Mode tambah
+      if (editIndex === -1) {
         daftarAktivitas.push(aktivitas);
-        tampilkanToast("Aktivitas berhasil ditambahkan!", "success");
       } else {
-        // Mode edit
-        daftarAktivitas[indeksEdit] = aktivitas;
-        tampilkanToast("Aktivitas berhasil diperbarui!", "success");
-        indeksEdit = -1;
-        document.getElementById("btnSubmit").textContent = "Tambah";
+        daftarAktivitas[editIndex] = aktivitas;
+        editIndex = -1;
+        document.getElementById("btnSimpan").innerText = "Tambah";
       }
 
-      localStorage.setItem("daftarAktivitas", JSON.stringify(daftarAktivitas));
+      simpanKeLocalStorage();
       input.value = "";
-      input.focus();
-      tampilkanData();
-
-      return true;
+      renderTabel();
     }
-
-    function tampilkanData() {
-  const tbody = document.getElementById("tabelAktivitas");
-  tbody.innerHTML = "";
-
-  daftarAktivitas.forEach((item, index) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${index + 1}</td>
-      <td>${item}</td>
-      <td>
-        <button class="btn btn-sm btn-warning me-1" onclick="editAktivitas(${index})">Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="hapusAktivitas(${index})">Hapus</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
 
     function editAktivitas(index) {
       document.getElementById("inputAktivitas").value = daftarAktivitas[index];
-      indeksEdit = index;
-      document.getElementById("btnSubmit").textContent = "Update";
+      document.getElementById("btnSimpan").innerText = "Simpan";
+      editIndex = index;
     }
 
     function hapusAktivitas(index) {
       if (confirm("Yakin ingin menghapus aktivitas ini?")) {
         daftarAktivitas.splice(index, 1);
-        localStorage.setItem("daftarAktivitas", JSON.stringify(daftarAktivitas));
-        tampilkanToast("Aktivitas berhasil dihapus!", "success");
-        tampilkanData();
+        simpanKeLocalStorage();
+        renderTabel();
       }
     }
 
-    tampilkanData(); // tampilkan saat load
+    function ubahJumlahPerHalaman() {
+      rowsPerPage = parseInt(document.getElementById("rowsPerPage").value);
+      currentPage = 1;
+      renderTabel();
+    }
+
+    function renderTabel() {
+      const keyword = document.getElementById("searchInput").value.toLowerCase();
+  const tbody = document.getElementById("tabelAktivitas");
+  tbody.innerHTML = "";
+
+  const dataTersaring = daftarAktivitas.filter(a => a.toLowerCase().includes(keyword));
+  const totalData = dataTersaring.length;
+  const totalPages = Math.ceil(totalData / rowsPerPage);
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = rowsPerPage === 9999 ? totalData : start + rowsPerPage;
+
+  const dataUntukDitampilkan = dataTersaring.slice(start, end);
+
+  if (dataUntukDitampilkan.length === 0) {
+    const trKosong = document.createElement("tr");
+    trKosong.innerHTML = `<td colspan="3" class="text-center text-muted">Data tidak ditemukan</td>`;
+    tbody.appendChild(trKosong);
+  } else {
+    dataUntukDitampilkan.forEach((aktivitas, i) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${start + i + 1}</td>
+        <td>${aktivitas}</td>
+        <td>
+          <button class="btn btn-sm btn-warning me-1" onclick="editAktivitas(${daftarAktivitas.indexOf(aktivitas)})">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="hapusAktivitas(${daftarAktivitas.indexOf(aktivitas)})">Hapus</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  renderPagination(totalPages);
+}
+
+    function renderPagination(totalPages) {
+      const pagination = document.getElementById("pagination");
+      pagination.innerHTML = "";
+
+      if (totalPages <= 1) return;
+
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement("li");
+        li.className = `page-item ${i === currentPage ? "active" : ""}`;
+        li.innerHTML = `<button class="page-link" onclick="ubahHalaman(${i})">${i}</button>`;
+        pagination.appendChild(li);
+      }
+    }
+
+    function ubahHalaman(page) {
+      currentPage = page;
+      renderTabel();
+    }
+
+    document.getElementById("searchInput").addEventListener("input", function () {
+      currentPage = 1;
+      renderTabel();
+    });
+
+    // Awal load
+    renderTabel();
   </script>
+
 </body>
 </html>
