@@ -1,77 +1,131 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Form Validasi Toast</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head><body class="bg-light d-flex flex-column align-items-center justify-content-center vh-100">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Edit Data Aktivitas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light d-flex justify-content-center align-items-center vh-100">
 
-  <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
-
-    <!-- Toast muncul di atas form -->
-    <div id="toastPesan" class="alert d-none align-items-center text-white bg-danger mb-3" role="alert">
-      <div class="d-flex justify-content-between w-100">
-        <span id="isiPesan">Pesan validasi di sini</span>
+  <div class="container bg-white p-4 rounded shadow" style="max-width: 600px;">
+    <!-- Notifikasi -->
+    <div id="toastPesan" class="alert d-none text-white bg-danger mb-3" role="alert">
+      <div class="d-flex justify-content-between">
+        <span id="isiPesan">Pesan di sini</span>
         <button type="button" class="btn-close btn-close-white" onclick="sembunyikanToast()"></button>
       </div>
     </div>
 
-    <h4 class="mb-3">Form Kontak</h4>
-    <form onsubmit="return validasiForm(event)">
-      <div class="mb-3">
-        <label for="nama" class="form-label">Nama</label>
-        <input type="text" class="form-control" id="nama" placeholder="Nama lengkap">
+    <h3 class="mb-3">Aktivitas Harian</h3>
+
+    <!-- Form -->
+    <form onsubmit="return prosesForm(event)">
+      <div class="input-group mb-3">
+        <input type="text" id="inputAktivitas" class="form-control" placeholder="Masukkan aktivitas">
+        <button id="btnSubmit" class="btn btn-primary" type="submit">Tambah</button>
       </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" placeholder="nama@email.com">
-      </div>
-      <button type="submit" class="btn btn-primary w-100">Kirim</button>
     </form>
+
+    <!-- Tabel -->
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered align-middle text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>No</th>
+            <th>Aktivitas</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tabelAktivitas"></tbody>
+      </table>
+    </div>
   </div>
-<script>
-  function validasiForm(event) {
-    event.preventDefault(); // stop submit
 
-    const nama = document.getElementById('nama').value.trim();
-    const email = document.getElementById('email').value.trim();
+  <script>
+    let daftarAktivitas = JSON.parse(localStorage.getItem("daftarAktivitas")) || [];
+    let indeksEdit = -1; // -1 artinya bukan mode edit
 
-    if (nama === "") {
-      tampilkanToast("Nama harus diisi!", "danger");
-      return false;
+    function tampilkanToast(pesan, tipe = "danger") {
+      const toast = document.getElementById("toastPesan");
+      const isi = document.getElementById("isiPesan");
+
+      toast.className = `alert text-white bg-${tipe} mb-3`;
+      isi.textContent = pesan;
+      toast.classList.remove("d-none");
+
+      setTimeout(() => toast.classList.add("d-none"), 3000);
     }
 
-    if (!email.includes("@") || !email.includes(".")) {
-      tampilkanToast("Email tidak valid!", "danger");
-      return false;
+    function sembunyikanToast() {
+      document.getElementById("toastPesan").classList.add("d-none");
     }
 
-    tampilkanToast("Form berhasil dikirim!", "success");
-    
-    document.querySelector('form').reset();
+    function prosesForm(event) {
+      event.preventDefault();
+      const input = document.getElementById("inputAktivitas");
+      const aktivitas = input.value.trim();
 
-  }
+      if (aktivitas === "") {
+        tampilkanToast("Aktivitas tidak boleh kosong!", "danger");
+        return false;
+      }
 
-  function tampilkanToast(pesan, tipe = "danger") {
-    const toastElement = document.getElementById('toastPesan');
-    const isiPesan = document.getElementById('isiPesan');
+      if (indeksEdit === -1) {
+        // Mode tambah
+        daftarAktivitas.push(aktivitas);
+        tampilkanToast("Aktivitas berhasil ditambahkan!", "success");
+      } else {
+        // Mode edit
+        daftarAktivitas[indeksEdit] = aktivitas;
+        tampilkanToast("Aktivitas berhasil diperbarui!", "success");
+        indeksEdit = -1;
+        document.getElementById("btnSubmit").textContent = "Tambah";
+      }
 
-    // Ganti warna & isi pesan
-    toastElement.className = `alert d-flex align-items-center text-white bg-${tipe} mb-3`;
-    isiPesan.textContent = pesan;
-    toastElement.classList.remove("d-none");
+      localStorage.setItem("daftarAktivitas", JSON.stringify(daftarAktivitas));
+      input.value = "";
+      input.focus();
+      tampilkanData();
 
-    // Sembunyikan otomatis setelah 3 detik
-    setTimeout(() => {
-      toastElement.classList.add("d-none");
-    }, 2000);
-  }
+      return true;
+    }
 
-  function sembunyikanToast() {
-    document.getElementById('toastPesan').classList.add("d-none");
-  }
-</script>
+    function tampilkanData() {
+  const tbody = document.getElementById("tabelAktivitas");
+  tbody.innerHTML = "";
 
+  daftarAktivitas.forEach((item, index) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td>${item}</td>
+      <td>
+        <button class="btn btn-sm btn-warning me-1" onclick="editAktivitas(${index})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="hapusAktivitas(${index})">Hapus</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+
+    function editAktivitas(index) {
+      document.getElementById("inputAktivitas").value = daftarAktivitas[index];
+      indeksEdit = index;
+      document.getElementById("btnSubmit").textContent = "Update";
+    }
+
+    function hapusAktivitas(index) {
+      if (confirm("Yakin ingin menghapus aktivitas ini?")) {
+        daftarAktivitas.splice(index, 1);
+        localStorage.setItem("daftarAktivitas", JSON.stringify(daftarAktivitas));
+        tampilkanToast("Aktivitas berhasil dihapus!", "success");
+        tampilkanData();
+      }
+    }
+
+    tampilkanData(); // tampilkan saat load
+  </script>
 </body>
 </html>

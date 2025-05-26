@@ -10,15 +10,17 @@
   <h1>tes</h1>
   <script>
     let laptop = {
-      merek: "Asus",
-      model: "ZenBook",
-      ram: 16
-    };
-    
-   
-    
-    console.log(laptop.merek); 
-    console.log(laptop["ram"]);
+  merek: "Asus",
+  model: "ZenBook",
+  ram: 16,
+  harga: 15000 // Menambah properti harga dengan benar
+};
+
+console.log(laptop.merek);         // Output: Asus
+console.log(laptop["ram"]);        // Output: 16
+console.log(laptop.harga);         // Output: 15000
+console.log(laptop["harga"]);      // Output: 15000
+
       </script>
 </body>
 </html>
